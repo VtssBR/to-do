@@ -1,0 +1,1627 @@
+/* ==========================================================================
+   FLOWBOARD — CYBERPUNK THEME & DESIGN SYSTEM
+   Baseado estritamente em:
+     1. public/paleta.png:
+        --c-pink:  #ff2a6d (Neon Pink / Magenta)
+        --c-ice:   #d1f7ff (Ice Cyan / Brilho Neon)
+        --c-cyan:  #05d9e8 (Electric Cyber Cyan)
+        --c-ocean: #005678 (Deep Teal Oceanic)
+        --c-night: #01012b (Midnight Void / Cyber Dark)
+     2. public/cyber.png:
+        Estética Cyberpunk / Neon Glow, bordas duplas/linhas angulares,
+        brilhos eletrizantes em ciano e rosa (#05d9e8 e #ff2a6d) sobre fundo
+        escuro profundo (#01012b), tipografia Rajdhani futurista.
+     3. public/layout.png:
+        Estrutura de Kanban, Sidebar, Header, Badges e Modais.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+/* --------------------------------------------------------------------------
+   VARIÁVEIS DE DESIGN (CYBERPUNK COMO DEFAULT & TEMA OFICIAL)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Cores Oficiais da Paleta */
+  --c-pink: #ff2a6d;
+  --c-ice: #d1f7ff;
+  --c-cyan: #05d9e8;
+  --c-ocean: #005678;
+  --c-night: #01012b;
+
+  /* Resplendores Neon (Cyber Glows de public/cyber.png) */
+  --glow-cyan: 0 0 10px rgba(5, 217, 232, 0.6), 0 0 20px rgba(5, 217, 232, 0.25);
+  --glow-pink: 0 0 10px rgba(255, 42, 109, 0.6), 0 0 20px rgba(255, 42, 109, 0.25);
+  --glow-text-cyan: 0 0 8px rgba(5, 217, 232, 0.7), 0 0 16px rgba(5, 217, 232, 0.35);
+  --glow-text-pink: 0 0 8px rgba(255, 42, 109, 0.7), 0 0 16px rgba(255, 42, 109, 0.35);
+
+  /* Superfícies Cyberpunk (Dark Midnight Void #01012b) */
+  --bg-app: #01012b;
+  --bg-sidebar: #020238;
+  --bg-header: #020238;
+  --bg-column: #050845;
+  --bg-card: #080d54;
+  --bg-surface-elevated: #0d1469;
+  --bg-input: #040638;
+  --bg-modal: #050845;
+
+  /* Tipografia & Cores de Texto */
+  --font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+  --text-main: #d1f7ff;
+  --text-secondary: #7ecbd6;
+  --text-muted: #3a7c93;
+  --text-on-primary: #01012b;
+
+  /* Bordas e Acentos */
+  --border-light: rgba(5, 217, 232, 0.18);
+  --border-card: rgba(5, 217, 232, 0.25);
+  --border-card-hover: #05d9e8;
+  --border-focus: #05d9e8;
+
+  /* Botões e Ações Principais */
+  --color-primary: #05d9e8;
+  --color-primary-hover: #d1f7ff;
+  --color-primary-text: #01012b;
+
+  /* Badges e Categorias */
+  --project-trabalho: #05d9e8;
+  --project-produto: #ff2a6d;
+  --project-pessoal: #d1f7ff;
+  --project-estudos: #005678;
+
+  --priority-alta: #ff2a6d;
+  --priority-alta-bg: rgba(255, 42, 109, 0.15);
+  --priority-alta-border: rgba(255, 42, 109, 0.5);
+
+  --priority-media: #05d9e8;
+  --priority-media-bg: rgba(5, 217, 232, 0.12);
+  --priority-media-border: rgba(5, 217, 232, 0.4);
+
+  --priority-baixa: #d1f7ff;
+  --priority-baixa-bg: rgba(209, 247, 255, 0.08);
+  --priority-baixa-border: rgba(209, 247, 255, 0.25);
+
+  --status-todo: #005678;
+  --status-in-progress: #05d9e8;
+  --status-done: #ff2a6d;
+
+  --badge-bg: rgba(0, 86, 120, 0.35);
+  --badge-text: #d1f7ff;
+  --sidebar-active-bg: rgba(5, 217, 232, 0.14);
+  --sidebar-active-text: #05d9e8;
+
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.6);
+  --shadow-card-hover: 0 6px 20px rgba(5, 217, 232, 0.22);
+  --shadow-modal: 0 20px 50px rgba(0, 0, 0, 0.85);
+
+  --modal-backdrop-bg: rgba(1, 1, 43, 0.88);
+  --column-dragover-bg: rgba(5, 217, 232, 0.1);
+  --column-dragover-border: #05d9e8;
+
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s var(--ease-smooth);
+}
+
+/* --------------------------------------------------------------------------
+   VARIANTE LIGHT CYBER (Inversão elegante mantendo a paleta restrita)
+   -------------------------------------------------------------------------- */
+[data-theme="light"] {
+  --bg-app: #ebf9fc;
+  --bg-sidebar: #ffffff;
+  --bg-header: #ffffff;
+  --bg-column: #d8f3f8;
+  --bg-card: #ffffff;
+  --bg-surface-elevated: #ffffff;
+  --bg-input: #f4fdff;
+  --bg-modal: #ffffff;
+
+  --text-main: #01012b;
+  --text-secondary: #005678;
+  --text-muted: #538c9e;
+  --text-on-primary: #ffffff;
+
+  --border-light: rgba(0, 86, 120, 0.15);
+  --border-card: rgba(0, 86, 120, 0.2);
+  --border-card-hover: #005678;
+  --border-focus: #005678;
+
+  --color-primary: #005678;
+  --color-primary-hover: #01012b;
+  --color-primary-text: #d1f7ff;
+
+  --badge-bg: #d1f7ff;
+  --badge-text: #005678;
+  --sidebar-active-bg: rgba(5, 217, 232, 0.2);
+  --sidebar-active-text: #005678;
+
+  --priority-alta: #ff2a6d;
+  --priority-alta-bg: rgba(255, 42, 109, 0.12);
+  --priority-alta-border: rgba(255, 42, 109, 0.35);
+
+  --priority-media: #005678;
+  --priority-media-bg: rgba(5, 217, 232, 0.18);
+  --priority-media-border: rgba(0, 86, 120, 0.3);
+
+  --priority-baixa: #01012b;
+  --priority-baixa-bg: #d1f7ff;
+  --priority-baixa-border: rgba(0, 86, 120, 0.2);
+
+  --glow-cyan: 0 0 10px rgba(5, 217, 232, 0.3);
+  --glow-pink: 0 0 10px rgba(255, 42, 109, 0.3);
+  --glow-text-cyan: none;
+  --glow-text-pink: none;
+  --shadow-card: 0 2px 8px rgba(0, 86, 120, 0.08);
+  --shadow-card-hover: 0 8px 20px rgba(0, 86, 120, 0.16);
+}
+
+/* --------------------------------------------------------------------------
+   RESET & CONFIGURAÇÃO GLOBAL
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 16px;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Fundo com grade cibernética sutil inspirada em public/cyber.png */
+body {
+  background-image: 
+    linear-gradient(rgba(5, 217, 232, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(5, 217, 232, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Scrollbars com neon */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(1, 1, 43, 0.6);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-ocean);
+  border-radius: 4px;
+  border: 1px solid rgba(5, 217, 232, 0.3);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   ESTRUTURA PRINCIPAL (APP LAYOUT)
+   -------------------------------------------------------------------------- */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* --------------------------------------------------------------------------
+   3.1. SIDEBAR (MENU LATERAL CYBER)
+   -------------------------------------------------------------------------- */
+.app-sidebar {
+  width: 255px;
+  min-width: 255px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 50;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+  transition: transform var(--transition-normal), background-color var(--transition-normal);
+}
+
+.sidebar-header {
+  padding: 22px 20px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--c-cyan);
+  border: 2px solid var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--c-ice);
+  text-shadow: var(--glow-text-cyan);
+  text-transform: uppercase;
+}
+
+.mobile-close-btn {
+  display: none;
+  color: var(--c-cyan);
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.sidebar-cta {
+  padding: 0 18px 20px;
+}
+
+/* Botões Cyberpunk */
+.btn {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 9px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.btn-primary {
+  background-color: var(--c-pink);
+  color: #ffffff;
+  border: 1px solid var(--c-pink);
+  box-shadow: var(--glow-pink);
+}
+.btn-primary:hover {
+  background-color: #ff4785;
+  box-shadow: 0 0 16px rgba(255, 42, 109, 0.85);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-block {
+  width: 100%;
+  justify-content: space-between;
+  padding: 11px 14px;
+}
+.btn-block .btn-text {
+  flex: 1;
+  text-align: left;
+  margin-left: 6px;
+}
+
+.shortcut-key {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(1, 1, 43, 0.5);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 1px 6px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--c-ice);
+  border: 1px solid var(--border-light);
+}
+.btn-outline:hover {
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+  background-color: rgba(5, 217, 232, 0.08);
+}
+
+.btn-ghost {
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+}
+.btn-ghost:hover {
+  color: var(--c-ice);
+  border-color: var(--border-light);
+  background-color: var(--badge-bg);
+}
+
+.btn-danger {
+  background-color: var(--c-pink);
+  color: #ffffff;
+  border: 1px solid var(--c-pink);
+  box-shadow: var(--glow-pink);
+}
+.btn-danger:hover {
+  background-color: #e6195a;
+  box-shadow: 0 0 18px rgba(255, 42, 109, 0.9);
+  transform: translateY(-1px);
+}
+
+/* Navegação da Sidebar */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 14px;
+}
+
+.nav-section {
+  margin-bottom: 22px;
+}
+
+.nav-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--c-cyan);
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  text-shadow: 0 0 6px rgba(5, 217, 232, 0.4);
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  transition: all var(--transition-fast);
+  text-align: left;
+  border-left: 2px solid transparent;
+}
+
+.nav-item:hover {
+  color: var(--c-ice);
+  background-color: rgba(5, 217, 232, 0.08);
+  border-left-color: var(--c-cyan);
+}
+
+.nav-item.active {
+  color: var(--c-cyan);
+  background-color: var(--sidebar-active-bg);
+  font-weight: 700;
+  border-left-color: var(--c-cyan);
+  box-shadow: inset 4px 0 10px rgba(5, 217, 232, 0.15);
+  text-shadow: 0 0 6px rgba(5, 217, 232, 0.5);
+}
+
+.nav-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  color: inherit;
+  opacity: 0.9;
+}
+
+.nav-item-label {
+  flex: 1;
+}
+
+.nav-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background-color: var(--badge-bg);
+  color: var(--c-ice);
+  border: 1px solid var(--border-light);
+  min-width: 20px;
+  text-align: center;
+}
+
+.nav-item.active .nav-badge {
+  background-color: rgba(5, 217, 232, 0.25);
+  border-color: var(--c-cyan);
+  color: var(--c-cyan);
+  box-shadow: 0 0 6px rgba(5, 217, 232, 0.4);
+}
+
+/* Indicadores de Cor de Projetos */
+.project-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+.dot-trabalho { background-color: var(--c-cyan); color: var(--c-cyan); }
+.dot-produto { background-color: var(--c-pink); color: var(--c-pink); }
+.dot-pessoal { background-color: var(--c-ice); color: var(--c-ice); }
+.dot-estudos { background-color: var(--c-ocean); color: var(--c-ocean); border: 1px solid var(--c-cyan); }
+
+/* Rodapé da Sidebar */
+.sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-restore {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+.btn-restore:hover {
+  color: var(--c-ice);
+  border-color: var(--border-light);
+  background-color: rgba(5, 217, 232, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+   ÁREA PRINCIPAL (MAIN WRAPPER & HEADER)
+   -------------------------------------------------------------------------- */
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 3.2. HEADER */
+.app-header {
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-light);
+  padding: 16px 28px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  transition: background-color var(--transition-normal);
+}
+
+.header-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-toggle-btn {
+  display: none;
+  padding: 6px;
+  border-radius: 4px;
+  color: var(--c-cyan);
+}
+
+.header-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  line-height: 1.15;
+  letter-spacing: 0.8px;
+  text-shadow: var(--glow-text-cyan);
+  text-transform: uppercase;
+}
+
+.header-date {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--c-cyan);
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Campo de Pesquisa Cyber */
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 0 10px;
+  height: 38px;
+  width: 240px;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.search-box:focus-within {
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+  width: 270px;
+}
+
+.search-icon {
+  color: var(--c-cyan);
+  display: flex;
+  margin-right: 8px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  color: var(--c-ice);
+  font-size: 0.95rem;
+  width: 100%;
+}
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-shortcut {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background-color: var(--bg-card);
+  color: var(--c-cyan);
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border-light);
+  line-height: 1.3;
+}
+
+.search-clear-btn {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 2px 4px;
+}
+.search-clear-btn:hover {
+  color: var(--c-pink);
+}
+
+/* Botão Compacto */
+.btn-compact-toggle {
+  height: 38px;
+  padding: 0 12px;
+  gap: 6px;
+  font-size: 0.88rem;
+}
+.btn-compact-toggle.active {
+  background-color: rgba(5, 217, 232, 0.15);
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Alternador de Tema */
+.theme-toggle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 4px;
+  border: 1px solid var(--border-light);
+  color: var(--c-cyan);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  color: var(--c-ice);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.theme-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .icon-sun,
+:root:not([data-theme="dark"]) .icon-sun {
+  display: flex;
+  color: var(--c-cyan);
+}
+[data-theme="light"] .icon-moon,
+:root:not([data-theme="dark"]) .icon-moon {
+  display: none;
+}
+
+[data-theme="dark"] .icon-sun {
+  display: flex;
+  color: var(--c-cyan);
+}
+[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+.btn-header-new {
+  height: 38px;
+  padding: 0 14px;
+}
+
+/* Linha Inferior do Header: Filtros e Ordenação */
+.header-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.priority-filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--c-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.priority-pills-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill-btn {
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-light);
+  gap: 6px;
+  transition: all var(--transition-fast);
+  text-transform: uppercase;
+}
+
+.pill-btn:hover {
+  background-color: rgba(5, 217, 232, 0.08);
+  color: var(--c-ice);
+  border-color: var(--border-light);
+}
+
+.pill-btn.active {
+  background-color: rgba(5, 217, 232, 0.16);
+  color: var(--c-cyan);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+  font-weight: 700;
+}
+
+.priority-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 6px currentColor;
+}
+.dot-alta { background-color: var(--c-pink); color: var(--c-pink); }
+.dot-media { background-color: var(--c-cyan); color: var(--c-cyan); }
+.dot-baixa { background-color: var(--c-ice); color: var(--c-ice); }
+
+/* Seletor de Ordenação */
+.sort-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--c-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sort-select {
+  appearance: none;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 5px 28px 5px 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--c-ice);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.sort-select:focus {
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.select-chevron {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  color: var(--c-cyan);
+  font-size: 0.8rem;
+}
+
+/* --------------------------------------------------------------------------
+   3.3. ÁREA PRINCIPAL (KANBAN BOARD)
+   -------------------------------------------------------------------------- */
+.kanban-main-content {
+  flex: 1;
+  padding: 24px 28px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.kanban-board-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  height: 100%;
+  min-width: min-content;
+}
+
+/* Colunas do Kanban */
+.kanban-column {
+  width: 350px;
+  min-width: 320px;
+  max-width: 380px;
+  background-color: var(--bg-column);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 170px);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.kanban-column.drag-over {
+  background-color: var(--column-dragover-bg);
+  border-color: var(--column-dragover-border);
+  box-shadow: var(--glow-cyan);
+}
+
+.column-header {
+  padding: 14px 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.column-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+}
+.status-todo { background-color: var(--c-ocean); color: var(--c-ocean); border: 1px solid var(--c-cyan); }
+.status-in-progress { background-color: var(--c-cyan); color: var(--c-cyan); }
+.status-done { background-color: var(--c-pink); color: var(--c-pink); }
+
+.column-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(5, 217, 232, 0.3);
+}
+
+.column-count {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 10px;
+  background-color: var(--bg-card);
+  color: var(--c-cyan);
+  border: 1px solid var(--border-light);
+}
+
+.btn-column-add {
+  color: var(--c-cyan);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+.btn-column-add:hover {
+  color: var(--c-ice);
+  background-color: rgba(5, 217, 232, 0.15);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Lista de Cards da Coluna */
+.kanban-cards-list {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 80px;
+}
+
+.column-footer {
+  padding: 10px 12px 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-column-footer-add {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  gap: 6px;
+  transition: all var(--transition-fast);
+  border: 1px dashed var(--border-light);
+}
+.btn-column-footer-add:hover {
+  color: var(--c-cyan);
+  background-color: rgba(5, 217, 232, 0.08);
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* --------------------------------------------------------------------------
+   DESIGN DOS CARDS (CYBERPUNK NEON CARDS)
+   -------------------------------------------------------------------------- */
+.kanban-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 6px;
+  padding: 14px 14px 12px;
+  box-shadow: var(--shadow-card);
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  position: relative;
+}
+
+.kanban-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-card-hover);
+  box-shadow: var(--shadow-card-hover), var(--glow-cyan);
+}
+
+.kanban-card:active {
+  cursor: grabbing;
+}
+
+.kanban-card.is-dragging {
+  opacity: 0.45;
+  transform: scale(0.97);
+  box-shadow: none;
+  border: 1px dashed var(--c-pink);
+}
+
+/* Linha Superior do Card: Categoria e Ações */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.card-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.kanban-card:hover .card-actions-group {
+  opacity: 1;
+}
+
+.card-action-btn {
+  color: var(--text-muted);
+  padding: 3px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+.card-action-btn:hover {
+  color: var(--c-cyan);
+  background-color: rgba(5, 217, 232, 0.15);
+}
+.card-action-btn.btn-delete-card:hover {
+  color: var(--c-pink);
+  background-color: var(--priority-alta-bg);
+  box-shadow: var(--glow-pink);
+}
+
+/* Linha Central: Checkbox de Conclusão e Título */
+.card-main-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.card-completion-circle {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1.8px solid var(--c-cyan);
+  flex-shrink: 0;
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  background: transparent;
+  cursor: pointer;
+}
+
+.card-completion-circle:hover {
+  border-color: var(--c-pink);
+  box-shadow: var(--glow-pink);
+  transform: scale(1.1);
+}
+
+.card-completion-circle.checked {
+  background-color: var(--c-pink);
+  border-color: var(--c-pink);
+  box-shadow: var(--glow-pink);
+  color: #ffffff;
+}
+
+.card-completion-circle svg {
+  display: none;
+}
+.card-completion-circle.checked svg {
+  display: block;
+}
+
+.card-title-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+  letter-spacing: 0.4px;
+  flex: 1;
+}
+
+.kanban-card.is-done .card-title-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Descrição do Card */
+.card-description-text {
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.38;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-left: 27px;
+}
+
+/* Modo Compacto */
+.compact-view .kanban-card {
+  padding: 10px 12px;
+  gap: 6px;
+}
+.compact-view .card-description-text {
+  display: none;
+}
+
+/* Rodapé do Card */
+.card-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+.card-priority-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.6px;
+}
+
+.card-priority-badge.priority-alta {
+  background-color: var(--priority-alta-bg);
+  color: var(--c-pink);
+  border: 1px solid var(--priority-alta-border);
+  box-shadow: 0 0 6px rgba(255, 42, 109, 0.35);
+}
+
+.card-priority-badge.priority-media {
+  background-color: var(--priority-media-bg);
+  color: var(--c-cyan);
+  border: 1px solid var(--priority-media-border);
+  box-shadow: 0 0 6px rgba(5, 217, 232, 0.3);
+}
+
+.card-priority-badge.priority-baixa {
+  background-color: var(--priority-baixa-bg);
+  color: var(--c-ice);
+  border: 1px solid var(--priority-baixa-border);
+}
+
+.card-due-date {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-due-date.is-overdue {
+  color: var(--c-pink);
+  text-shadow: 0 0 6px rgba(255, 42, 109, 0.5);
+}
+
+.card-due-date.is-today {
+  color: var(--c-cyan);
+  text-shadow: 0 0 6px rgba(5, 217, 232, 0.5);
+}
+
+/* Estado Vazio */
+.column-empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px 16px;
+  border: 1px dashed var(--border-light);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   5. SISTEMA DE MODAIS (CYBERPUNK GLOW)
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--modal-backdrop-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s var(--ease-smooth);
+}
+
+.modal-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-dialog {
+  background-color: var(--bg-modal);
+  border: 1px solid var(--c-cyan);
+  border-radius: 8px;
+  box-shadow: var(--shadow-modal), var(--glow-cyan);
+  width: 100%;
+  transform: scale(0.95) translateY(8px);
+  transition: transform 0.25s var(--ease-smooth);
+  overflow: hidden;
+}
+
+.modal-backdrop.is-open .modal-dialog {
+  transform: scale(1) translateY(0);
+}
+
+/* 5.1. Modal de Tarefa */
+.modal-dialog-task {
+  max-width: 520px;
+}
+
+.modal-header {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modal-title-wrapper {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-shadow: var(--glow-text-cyan);
+}
+
+.modal-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.modal-close-btn {
+  color: var(--c-cyan);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+.modal-close-btn:hover {
+  color: var(--c-pink);
+  box-shadow: var(--glow-pink);
+}
+
+.modal-form {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--c-cyan);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.required-indicator {
+  color: var(--c-pink);
+}
+
+.form-control {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 9px 12px;
+  font-size: 0.95rem;
+  color: var(--c-ice);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  width: 100%;
+}
+
+.form-control:focus {
+  border-color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.form-control.input-error {
+  border-color: var(--c-pink);
+  box-shadow: var(--glow-pink);
+}
+
+.form-error {
+  font-size: 0.82rem;
+  color: var(--c-pink);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 75px;
+  max-height: 180px;
+}
+
+.form-select {
+  appearance: none;
+  cursor: pointer;
+  padding-right: 32px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.col-half {
+  flex: 1;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+/* 5.2. Modal de Confirmação de Exclusão Cyber */
+.modal-dialog-delete {
+  max-width: 440px;
+  padding: 26px 24px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  border-color: var(--c-pink);
+  box-shadow: var(--shadow-modal), var(--glow-pink);
+}
+
+.delete-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--priority-alta-bg);
+  color: var(--c-pink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--c-pink);
+  box-shadow: var(--glow-pink);
+}
+
+.delete-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.delete-modal-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-shadow: var(--glow-text-pink);
+}
+
+.delete-modal-msg {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.delete-task-preview {
+  margin-top: 6px;
+  padding: 10px 14px;
+  background-color: rgba(1, 1, 43, 0.7);
+  border-radius: 4px;
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.delete-preview-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background-color: var(--bg-card);
+  color: var(--c-cyan);
+  border: 1px solid var(--c-cyan);
+}
+
+.delete-preview-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--c-ice);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.delete-footer {
+  width: 100%;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.delete-footer .btn {
+  flex: 1;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   SISTEMA DE NOTIFICAÇÕES (TOAST NOTIFICATIONS)
+   -------------------------------------------------------------------------- */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  background-color: var(--bg-surface-elevated);
+  border: 1px solid var(--c-cyan);
+  border-radius: 4px;
+  padding: 12px 18px;
+  box-shadow: var(--shadow-modal), var(--glow-cyan);
+  color: var(--c-ice);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  min-width: 260px;
+  max-width: 380px;
+  transform: translateX(100px);
+  opacity: 0;
+  transition: transform 0.3s var(--ease-smooth), opacity 0.3s var(--ease-smooth);
+}
+
+.toast.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-icon-success {
+  color: var(--c-cyan);
+}
+
+.toast-icon-danger {
+  color: var(--c-pink);
+}
+
+.toast-icon-info {
+  color: var(--c-ice);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVIDADE
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: 220px;
+    min-width: 220px;
+  }
+  .kanban-main-content {
+    padding: 18px;
+  }
+  .kanban-column {
+    width: 310px;
+    min-width: 290px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: var(--modal-backdrop-bg);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+  .sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    z-index: 90;
+    transform: translateX(-100%);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.7);
+  }
+  .app-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-close-btn {
+    display: flex;
+  }
+  .mobile-toggle-btn {
+    display: flex;
+  }
+
+  .app-header {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .header-top-row {
+    flex-wrap: wrap;
+  }
+
+  .header-actions {
+    width: 100%;
+    order: 3;
+    justify-content: space-between;
+  }
+
+  .search-box {
+    width: 100%;
+    flex: 1;
+  }
+  .search-box:focus-within {
+    width: 100%;
+  }
+
+  .btn-header-new span,
+  .btn-compact-toggle .compact-text {
+    display: none;
+  }
+
+  .header-sub-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .priority-filters-bar {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .sort-control {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .kanban-main-content {
+    padding: 14px 12px;
+  }
+
+  .kanban-board-container {
+    gap: 14px;
+    padding-bottom: 20px;
+  }
+
+  .kanban-column {
+    width: 85vw;
+    min-width: 270px;
+    max-width: 320px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .toast-container {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+  }
+  .toast {
+    min-width: unset;
+    max-width: 100%;
+  }
+}
