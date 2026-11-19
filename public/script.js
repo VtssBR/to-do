@@ -1,13 +1,13 @@
 /**
  * FLOWBOARD — GERENCIADOR DE TAREFAS KANBAN
- * Implementação em JavaScript Vanilla (ES6+)
+ * Implementação em JavaScript Vanilla (ES6+) com Firebase Cloud Firestore (SDK v13.4.0 via CDN)
  * 
  * Módulos e Responsabilidades:
- * 1. Gerenciamento de Estado & Seed Data
- * 2. Persistência em LocalStorage
- * 3. Sistema de Temas (Dark / Light Mode)
+ * 1. Gerenciamento de Estado & Conexão em Tempo Real (onSnapshot)
+ * 2. Persistência Exclusiva no Cloud Firestore
+ * 3. Sistema de Temas (Dark / Light Mode - UI state no localStorage)
  * 4. Renderização do Quadro Kanban & Cards
- * 5. Drag-and-Drop Nativo do HTML5
+ * 5. Drag-and-Drop Nativo do HTML5 com batch writes
  * 6. Sistema de Modais (Criação/Edição e Confirmação de Exclusão)
  * 7. Filtros, Pesquisa e Ordenação
  * 8. Notificações Toast & Atalhos de Teclado
@@ -15,11 +15,18 @@
 
 'use strict';
 
+import {
+  subscribeToTasks,
+  createTask,
+  updateTask,
+  deleteTask,
+  batchUpdateTaskOrders
+} from './src/services/task.service.js';
+
 // ==========================================================================
-// CONSTANTES E CHAVES DE ARMAZENAMENTO
+// CONSTANTES E CHAVES DE ARMAZENAMENTO (APENAS PREFERÊNCIAS DE UI)
 // ==========================================================================
-const STORAGE_KEYS = {
-  TASKS: 'flowboard_tasks_v1',
+const UI_STORAGE_KEYS = {
   THEME: 'flowboard_theme_v1',
   COMPACT: 'flowboard_compact_v1'
 };
@@ -68,7 +75,7 @@ function updateHeaderCurrentDate() {
   const day = now.toLocaleDateString('pt-BR', { day: 'numeric' });
   const month = now.toLocaleDateString('pt-BR', { month: 'long' });
 
-  // Capitaliza primeira letra de cada palavra: "Terça-Feira, 17 De Novembro"
+  // Capitaliza primeira letra de cada palavra
   const formattedWeekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
   const formattedMonth = month.charAt(0).toUpperCase() + month.slice(1);
 
@@ -76,84 +83,60 @@ function updateHeaderCurrentDate() {
 }
 
 // ==========================================================================
-// DADOS DEMONSTRATIVOS INICIAIS (SEED DATA)
-// Baseados estritamente na Seção 9 do Prompt
+// DADOS DEMONSTRATIVOS INICIAIS (SEED DATA PARA RESTAURAR PADRÃO NO FIRESTORE)
 // ==========================================================================
-function getInitialTasks() {
-  return [
-    {
-      id: 'task-seed-1',
-      title: 'Organizar arquivos pessoais',
-      description: 'Separar documentos fiscais e backups em pastas por ano na nuvem.',
-      dueDate: getTodayIsoString(3),
-      priority: 'baixa',
-      category: 'Pessoal',
-      status: 'todo',
-      order: 0,
-      createdAt: Date.now() - 600000
-    },
-    {
-      id: 'task-seed-2',
-      title: 'Finalizar documentação do projeto',
-      description: 'Revisar requisitos funcionais, fluxos de usuário e guia de implantação.',
-      dueDate: getTodayIsoString(0),
-      priority: 'alta',
-      category: 'Trabalho',
-      status: 'todo',
-      order: 1,
-      createdAt: Date.now() - 500000
-    },
-    {
-      id: 'task-seed-3',
-      title: 'Desenvolver interface administrativa',
-      description: 'Implementar layout Kanban responsivo com cards e interações de arrastar.',
-      dueDate: getTodayIsoString(1),
-      priority: 'alta',
-      category: 'Produto',
-      status: 'in-progress',
-      order: 0,
-      createdAt: Date.now() - 400000
-    },
-    {
-      id: 'task-seed-4',
-      title: 'Revisar tarefas pendentes',
-      description: 'Alinhar prioridades da sprint e atualizar prazos com a equipe.',
-      dueDate: getTodayIsoString(0),
-      priority: 'media',
-      category: 'Trabalho',
-      status: 'in-progress',
-      order: 1,
-      createdAt: Date.now() - 300000
-    },
-    {
-      id: 'task-seed-5',
-      title: 'Configurar ambiente de desenvolvimento',
-      description: 'Padronizar editor, extensões e variáveis locais de trabalho.',
-      dueDate: getTodayIsoString(-1),
-      priority: 'media',
-      category: 'Estudos',
-      status: 'done',
-      order: 0,
-      createdAt: Date.now() - 200000
-    },
-    {
-      id: 'task-seed-6',
-      title: 'Criar estrutura inicial do projeto',
-      description: 'Definir arquitetura semântica em HTML, tokens CSS e módulos JS.',
-      dueDate: getTodayIsoString(-2),
-      priority: 'baixa',
-      category: 'Produto',
-      status: 'done',
-      order: 1,
-      createdAt: Date.now() - 100000
-    }
-  ];
-}
+const DEFAULT_TASKS = [
+  {
+    title: 'Definir arquitetura e stack do projeto',
+    description: 'Documentar os padrões de pastas, CDN do Firebase Firestore e regras de segurança.',
+    dueDate: getTodayIsoString(0),
+    priority: 'alta',
+    category: 'Trabalho',
+    status: 'done',
+    order: 0
+  },
+  {
+    title: 'Implementar listener onSnapshot em tempo real',
+    description: 'Conectar a interface diretamente ao Cloud Firestore para sincronização instantânea.',
+    dueDate: getTodayIsoString(1),
+    priority: 'alta',
+    category: 'Produto',
+    status: 'in-progress',
+    order: 0
+  },
+  {
+    title: 'Refatorar formulários e modais para async/await',
+    description: 'Integrar createTask e updateTask garantindo tratamento de erros e feedbacks visuais.',
+    dueDate: getTodayIsoString(2),
+    priority: 'media',
+    category: 'Trabalho',
+    status: 'todo',
+    order: 0
+  },
+  {
+    title: 'Revisar regras de segurança do Firestore',
+    description: 'Configurar o arquivo firestore.rules impedindo acessos e campos corrompidos.',
+    dueDate: getTodayIsoString(3),
+    priority: 'alta',
+    category: 'Estudos',
+    status: 'todo',
+    order: 1
+  },
+  {
+    title: 'Ajustar estilo visual Cyberpunk nos novos estados',
+    description: 'Validar contrastes, animações de loading, empty states e toasts de notificação.',
+    dueDate: getTodayIsoString(5),
+    priority: 'baixa',
+    category: 'Pessoal',
+    status: 'todo',
+    order: 2
+  }
+];
 
 // ==========================================================================
 // ESTADO GLOBAL DA APLICAÇÃO
 // ==========================================================================
-const AppState = {
+export const AppState = {
   tasks: [],
   filters: {
     view: 'all', // 'all' | 'today' | 'upcoming' | 'done'
@@ -165,54 +148,100 @@ const AppState = {
   compactMode: false,
   draggedTaskId: null,
   taskPendingDeletionId: null,
+  unsubscribeFirestore: null,
+  loading: true,
+  error: null,
 
   // Inicialização do Estado
   init() {
-    this.loadTasks();
     this.initTheme();
     this.initCompactMode();
+    this.migrateLocalStorageData();
+    this.startFirestoreListener();
   },
 
-  loadTasks() {
+  // Migração segura de dados antigos do localStorage caso existam
+  async migrateLocalStorageData() {
+    const OLD_STORAGE_KEY = 'flowboard_tasks_v1';
     try {
-      const stored = localStorage.getItem(STORAGE_KEYS.TASKS);
+      const stored = localStorage.getItem(OLD_STORAGE_KEY);
       if (stored) {
-        this.tasks = JSON.parse(stored);
-      } else {
-        this.tasks = getInitialTasks();
-        this.saveTasks();
+        const localTasks = JSON.parse(stored);
+        if (Array.isArray(localTasks) && localTasks.length > 0) {
+          console.info(`[Migração] Migrando ${localTasks.length} tarefas do localStorage para o Firestore...`);
+          for (const item of localTasks) {
+            await createTask({
+              title: item.title,
+              description: item.description || '',
+              dueDate: item.dueDate || '',
+              priority: item.priority || 'media',
+              category: item.category || 'Trabalho',
+              status: item.status || 'todo'
+            }, item.order || 0);
+          }
+          showToast(`${localTasks.length} tarefas locais migradas para a nuvem!`, 'success');
+        }
+        localStorage.removeItem(OLD_STORAGE_KEY);
       }
     } catch (err) {
-      console.warn('Erro ao carregar dados do localStorage:', err);
-      this.tasks = getInitialTasks();
+      console.warn('[Migração] Falha ao migrar dados do localStorage:', err);
     }
   },
 
-  saveTasks() {
-    try {
-      localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(this.tasks));
-    } catch (err) {
-      console.error('Erro ao salvar tarefas no localStorage:', err);
+  // Inicia a sincronização em tempo real via onSnapshot
+  startFirestoreListener() {
+    if (this.unsubscribeFirestore) {
+      this.unsubscribeFirestore();
+      this.unsubscribeFirestore = null;
     }
-    this.updateBadges();
-  },
 
-  restoreDefaults() {
-    this.tasks = getInitialTasks();
-    this.saveTasks();
+    this.loading = true;
+    this.error = null;
     this.render();
-    showToast('Tarefas padrão restauradas com sucesso!', 'info');
+
+    this.unsubscribeFirestore = subscribeToTasks(
+      (updatedTasks) => {
+        this.tasks = updatedTasks;
+        this.loading = false;
+        this.error = null;
+        this.render();
+      },
+      (err) => {
+        console.error('[Firestore] Erro no recebimento de snapshot:', err);
+        this.loading = false;
+        this.error = err.message || 'Erro ao sincronizar com o banco de dados.';
+        this.render();
+        if (err.code === 'permission-denied') {
+          showToast('Permissão negada ao acessar o Firestore. Verifique as regras de segurança.', 'danger');
+        } else {
+          showToast('Falha na conexão com o Firestore. Verifique sua internet.', 'danger');
+        }
+      }
+    );
+  },
+
+  async restoreDefaults() {
+    try {
+      showToast('Restaurando tarefas padrão no Firestore...', 'info');
+      for (const t of DEFAULT_TASKS) {
+        await createTask(t, t.order);
+      }
+      showToast('Tarefas padrão restauradas com sucesso!', 'success');
+    } catch (err) {
+      console.error('Erro ao restaurar tarefas padrão:', err);
+      showToast('Falha ao restaurar tarefas no Firestore.', 'danger');
+    }
   },
 
   initTheme() {
-    const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
+    const savedTheme = localStorage.getItem(UI_STORAGE_KEYS.THEME) || 'dark';
     this.applyTheme(savedTheme);
   },
 
   applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     try {
-      localStorage.setItem(STORAGE_KEYS.THEME, theme);
+      localStorage.setItem(UI_STORAGE_KEYS.THEME, theme);
     } catch (e) {
       console.warn(e);
     }
@@ -226,7 +255,7 @@ const AppState = {
   },
 
   initCompactMode() {
-    const isCompact = localStorage.getItem(STORAGE_KEYS.COMPACT) === 'true';
+    const isCompact = localStorage.getItem(UI_STORAGE_KEYS.COMPACT) === 'true';
     this.compactMode = isCompact;
     this.applyCompactMode(isCompact);
   },
@@ -242,7 +271,7 @@ const AppState = {
       toggleBtn.classList.toggle('active', isCompact);
     }
     try {
-      localStorage.setItem(STORAGE_KEYS.COMPACT, String(isCompact));
+      localStorage.setItem(UI_STORAGE_KEYS.COMPACT, String(isCompact));
     } catch (e) {
       console.warn(e);
     }
@@ -252,86 +281,62 @@ const AppState = {
     this.applyCompactMode(!this.compactMode);
   },
 
-  // Operações de CRUD
-  addTask(taskData) {
-    const columnTasks = this.tasks.filter(t => t.status === taskData.status);
-    const newOrder = columnTasks.length;
+  // Operações de CRUD com Firestore
+  async addTask(taskData) {
+    try {
+      const columnTasks = this.tasks.filter(t => t.status === taskData.status);
+      const newOrder = columnTasks.length;
 
-    const newTask = {
-      id: `task-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-      title: taskData.title.trim(),
-      description: taskData.description ? taskData.description.trim() : '',
-      dueDate: taskData.dueDate || '',
-      priority: taskData.priority || 'media',
-      category: taskData.category || 'Trabalho',
-      status: taskData.status || 'todo',
-      order: newOrder,
-      createdAt: Date.now()
-    };
-
-    this.tasks.push(newTask);
-    this.saveTasks();
-    this.render();
-    showToast('Tarefa criada com sucesso!', 'success');
+      await createTask(taskData, newOrder);
+      showToast('Tarefa criada com sucesso!', 'success');
+    } catch (err) {
+      console.error('Erro ao adicionar tarefa no Firestore:', err);
+      showToast(err.code === 'permission-denied' ? 'Acesso negado para criar tarefa.' : 'Erro ao salvar tarefa no banco de dados.', 'danger');
+    }
   },
 
-  updateTask(id, taskData) {
+  async updateTask(id, taskData) {
+    try {
+      await updateTask(id, taskData);
+      showToast('Tarefa atualizada com sucesso!', 'success');
+    } catch (err) {
+      console.error('Erro ao atualizar tarefa no Firestore:', err);
+      showToast(err.code === 'permission-denied' ? 'Acesso negado para atualizar tarefa.' : 'Erro ao atualizar tarefa.', 'danger');
+    }
+  },
+
+  async deleteTask(id) {
+    try {
+      await deleteTask(id);
+      showToast('Tarefa excluída permanentemente.', 'danger');
+    } catch (err) {
+      console.error('Erro ao excluir tarefa no Firestore:', err);
+      showToast(err.code === 'permission-denied' ? 'Acesso negado para excluir tarefa.' : 'Erro ao excluir tarefa.', 'danger');
+    }
+  },
+
+  async toggleTaskCompletion(id) {
     const task = this.tasks.find(t => t.id === id);
     if (!task) return;
 
-    task.title = taskData.title.trim();
-    task.description = taskData.description ? taskData.description.trim() : '';
-    task.dueDate = taskData.dueDate || '';
-    task.priority = taskData.priority;
-    task.category = taskData.category;
+    const nextStatus = task.status === 'done' ? 'todo' : 'done';
+    const targetColumnTasks = this.tasks.filter(t => t.status === nextStatus && t.id !== id);
+    const newOrder = targetColumnTasks.length;
 
-    if (task.status !== taskData.status) {
-      task.status = taskData.status;
-      const targetColumnTasks = this.tasks.filter(t => t.status === taskData.status && t.id !== id);
-      task.order = targetColumnTasks.length;
+    try {
+      await updateTask(id, { status: nextStatus, order: newOrder });
+      showToast(`Tarefa movida para "${nextStatus === 'done' ? 'Concluídas' : 'A fazer'}".`, 'info');
+    } catch (err) {
+      console.error('Erro ao alterar status da tarefa:', err);
+      showToast('Erro ao atualizar status da tarefa.', 'danger');
     }
-
-    this.saveTasks();
-    this.render();
-    showToast('Tarefa atualizada com sucesso!', 'success');
   },
 
-  deleteTask(id) {
-    const index = this.tasks.findIndex(t => t.id === id);
-    if (index === -1) return;
-
-    this.tasks.splice(index, 1);
-    this.saveTasks();
-    this.render();
-    showToast('Tarefa excluída permanentemente.', 'danger');
-  },
-
-  toggleTaskCompletion(id) {
-    const task = this.tasks.find(t => t.id === id);
-    if (!task) return;
-
-    if (task.status === 'done') {
-      task.status = 'todo';
-    } else {
-      task.status = 'done';
-    }
-
-    const colTasks = this.tasks.filter(t => t.status === task.status && t.id !== id);
-    task.order = colTasks.length;
-
-    this.saveTasks();
-    this.render();
-    showToast(`Tarefa movida para "${task.status === 'done' ? 'Concluídas' : 'A fazer'}".`, 'info');
-  },
-
-  moveTaskToColumn(taskId, targetStatus, targetIndex = null) {
+  async moveTaskToColumn(taskId, targetStatus, targetIndex = null) {
     const task = this.tasks.find(t => t.id === taskId);
     if (!task) return;
 
-    const oldStatus = task.status;
-    task.status = targetStatus;
-
-    // Reorganiza a ordem na coluna de destino
+    // Se o status e a posição continuarem idênticos, não faz nada
     const targetTasks = this.tasks
       .filter(t => t.status === targetStatus && t.id !== taskId)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -342,12 +347,19 @@ const AppState = {
       targetTasks.splice(targetIndex, 0, task);
     }
 
-    targetTasks.forEach((t, index) => {
-      t.order = index;
-    });
+    // Prepara batch updates
+    const updates = targetTasks.map((t, index) => ({
+      id: t.id,
+      order: index,
+      status: targetStatus
+    }));
 
-    this.saveTasks();
-    this.render();
+    try {
+      await batchUpdateTaskOrders(updates);
+    } catch (err) {
+      console.error('Erro ao reordenar tarefas no Firestore:', err);
+      showToast('Falha ao mover tarefa no banco de dados.', 'danger');
+    }
   },
 
   // Filtros e Ordenação
@@ -461,13 +473,41 @@ const AppState = {
 
   // Renderização Geral
   render() {
-    const filteredTasks = this.getFilteredTasks();
-
     const columns = {
       todo: document.getElementById('cards-list-todo'),
       'in-progress': document.getElementById('cards-list-in-progress'),
       done: document.getElementById('cards-list-done')
     };
+
+    // Estado de Loading
+    if (this.loading) {
+      Object.keys(columns).forEach(status => {
+        const container = columns[status];
+        if (!container) return;
+        container.innerHTML = `
+          <div class="column-empty-placeholder loading-placeholder">
+            <span>Sincronizando tarefas com Firestore...</span>
+          </div>
+        `;
+      });
+      return;
+    }
+
+    // Estado de Erro
+    if (this.error) {
+      Object.keys(columns).forEach(status => {
+        const container = columns[status];
+        if (!container) return;
+        container.innerHTML = `
+          <div class="column-empty-placeholder error-placeholder">
+            <span>Erro na sincronização: ${escapeHtml(this.error)}</span>
+          </div>
+        `;
+      });
+      return;
+    }
+
+    const filteredTasks = this.getFilteredTasks();
 
     Object.keys(columns).forEach(status => {
       const container = columns[status];
@@ -479,9 +519,7 @@ const AppState = {
       if (columnTasks.length === 0) {
         const emptyEl = document.createElement('div');
         emptyEl.className = 'column-empty-placeholder';
-        emptyEl.innerHTML = `
-          <span>Nenhuma tarefa aqui</span>
-        `;
+        emptyEl.innerHTML = `<span>Nenhuma tarefa aqui</span>`;
         container.appendChild(emptyEl);
       } else {
         columnTasks.forEach(task => {
@@ -627,7 +665,7 @@ function escapeHtml(text) {
 /**
  * 5.1. MODAL ÚNICO DE CRIAÇÃO E EDIÇÃO DE TAREFAS
  */
-const TaskModal = {
+export const TaskModal = {
   backdrop: null,
   form: null,
   titleEl: null,
@@ -675,9 +713,9 @@ const TaskModal = {
       }
     });
 
-    this.form.addEventListener('submit', (e) => {
+    this.form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      this.handleSubmit();
+      await this.handleSubmit();
     });
   },
 
@@ -741,7 +779,7 @@ const TaskModal = {
     this.titleError.hidden = true;
   },
 
-  handleSubmit() {
+  async handleSubmit() {
     const title = this.titleInput.value.trim();
     if (!title) {
       this.titleInput.classList.add('input-error');
@@ -760,20 +798,26 @@ const TaskModal = {
     };
 
     const isEdit = Boolean(this.idInput.value);
-    if (isEdit) {
-      AppState.updateTask(this.idInput.value, taskData);
-    } else {
-      AppState.addTask(taskData);
-    }
+    const originalSubmitLabel = this.submitLabel.textContent;
+    this.submitLabel.textContent = isEdit ? 'Salvando...' : 'Criando...';
 
-    this.close();
+    try {
+      if (isEdit) {
+        await AppState.updateTask(this.idInput.value, taskData);
+      } else {
+        await AppState.addTask(taskData);
+      }
+      this.close();
+    } finally {
+      this.submitLabel.textContent = originalSubmitLabel;
+    }
   }
 };
 
 /**
  * 5.2. MODAL EXCLUSIVO DE CONFIRMAÇÃO DE EXCLUSÃO
  */
-const DeleteModal = {
+export const DeleteModal = {
   backdrop: null,
   confirmBtn: null,
   cancelBtn: null,
@@ -793,10 +837,18 @@ const DeleteModal = {
       if (e.target === this.backdrop) this.close();
     });
 
-    this.confirmBtn.addEventListener('click', () => {
+    this.confirmBtn.addEventListener('click', async () => {
       if (this.currentTaskId) {
-        AppState.deleteTask(this.currentTaskId);
-        this.close();
+        const idToDelete = this.currentTaskId;
+        this.confirmBtn.disabled = true;
+        this.confirmBtn.textContent = 'Excluindo...';
+        try {
+          await AppState.deleteTask(idToDelete);
+          this.close();
+        } finally {
+          this.confirmBtn.disabled = false;
+          this.confirmBtn.textContent = 'Excluir tarefa';
+        }
       }
     });
   },
@@ -856,7 +908,6 @@ function setupDragAndDrop() {
     });
 
     column.addEventListener('dragleave', (e) => {
-      // Remove apenas se saiu do próprio container da coluna
       if (!column.contains(e.relatedTarget)) {
         column.classList.remove('drag-over');
       }
@@ -892,7 +943,7 @@ function setupDragAndDrop() {
 // ==========================================================================
 // NOTIFICAÇÕES TOAST
 // ==========================================================================
-function showToast(message, type = 'info') {
+export function showToast(message, type = 'info') {
   const container = document.getElementById('toast-container');
   if (!container) return;
 
@@ -982,8 +1033,6 @@ function setupUIEvents() {
       if (pageTitle) pageTitle.textContent = label;
 
       AppState.render();
-
-      // Fecha drawer mobile se estiver aberto
       closeMobileSidebar();
     });
   });
@@ -1048,9 +1097,9 @@ function setupUIEvents() {
   // 8. Botão Restaurar Padrão
   const restoreBtn = document.getElementById('btn-restore-defaults');
   if (restoreBtn) {
-    restoreBtn.addEventListener('click', () => {
-      if (confirm('Deseja realmente restaurar as tarefas padrão de demonstração? Suas alterações serão substituídas.')) {
-        AppState.restoreDefaults();
+    restoreBtn.addEventListener('click', async () => {
+      if (confirm('Deseja realmente adicionar as tarefas padrão de demonstração no Cloud Firestore?')) {
+        await AppState.restoreDefaults();
       }
     });
   }
@@ -1116,5 +1165,4 @@ document.addEventListener('DOMContentLoaded', () => {
   DeleteModal.init();
   setupDragAndDrop();
   setupUIEvents();
-  AppState.render();
 });
