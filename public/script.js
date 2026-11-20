@@ -159,7 +159,7 @@ export const AppState = {
     this.initTheme();
     this.initCompactMode();
     this.migrateLocalStorageData();
-    this.startFirestoreListener();
+    // startFirestoreListener é gerenciado exclusivamente pelo listener do authStore
   },
 
   // Migração segura de dados antigos do localStorage caso existam
