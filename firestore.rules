@@ -28,22 +28,28 @@ service cloud.firestore {
         && data.order is number;
     }
 
+    function isAuthenticatedAndVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
     match /tasks/{taskId} {
-      // Leitura pública da coleção tasks
-      allow read: if true;
+      // Exige usuário autenticado e com e-mail verificado para operações
+      allow read: if isAuthenticatedAndVerified();
 
       // Criação: exige validação estrita dos campos e timestamps válidos
-      allow create: if hasValidFields(request.resource.data)
+      allow create: if isAuthenticatedAndVerified()
+                    && hasValidFields(request.resource.data)
                     && request.resource.data.createdAt == request.time
                     && request.resource.data.updatedAt == request.time;
 
       // Atualização: não permite alterar createdAt nem id, valida campos
-      allow update: if hasValidFields(request.resource.data)
+      allow update: if isAuthenticatedAndVerified()
+                    && hasValidFields(request.resource.data)
                     && request.resource.data.createdAt == resource.data.createdAt
                     && request.resource.data.updatedAt == request.time;
 
-      // Exclusão permitida
-      allow delete: if true;
+      // Exclusão permitida para usuários autenticados e verificados
+      allow delete: if isAuthenticatedAndVerified();
     }
   }
 }

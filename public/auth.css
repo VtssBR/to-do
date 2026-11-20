@@ -1,0 +1,319 @@
+/* ==========================================================================
+   FLOWBOARD — ESTILOS DE AUTENTICAÇÃO CYBERPUNK
+   Design integrado à paleta de cores (paleta.png e cyber.png)
+   ========================================================================== */
+
+/* Tela de Autenticação em Camada / Overlay Completo */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-app);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(5, 217, 232, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(255, 42, 109, 0.12) 0%, transparent 40%),
+    linear-gradient(180deg, rgba(1, 1, 43, 0.95) 0%, #01012b 100%);
+  padding: 20px;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-modal);
+  border: 1px solid var(--border-card);
+  border-radius: 8px;
+  padding: 32px 28px;
+  box-shadow: var(--shadow-modal), 0 0 30px rgba(5, 217, 232, 0.15);
+  position: relative;
+  overflow: hidden;
+  animation: authCardFadeIn 0.3s var(--ease-smooth);
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--c-cyan), var(--c-pink));
+  box-shadow: 0 0 10px var(--c-cyan);
+}
+
+@keyframes authCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background-color: var(--sidebar-active-bg);
+  border: 1px solid var(--c-cyan);
+  color: var(--c-cyan);
+  box-shadow: var(--glow-cyan);
+  margin-bottom: 14px;
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--c-ice);
+  text-shadow: 0 0 8px rgba(209, 247, 255, 0.4);
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Painel de Mensagens / Feedback */
+.auth-alert {
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  line-height: 1.35;
+  animation: authCardFadeIn 0.2s ease;
+}
+
+.auth-alert-error {
+  background-color: var(--priority-alta-bg);
+  border: 1px solid var(--c-pink);
+  color: #ffccd8;
+  box-shadow: var(--glow-pink);
+}
+
+.auth-alert-success {
+  background-color: rgba(5, 217, 232, 0.15);
+  border: 1px solid var(--c-cyan);
+  color: var(--c-ice);
+  box-shadow: var(--glow-cyan);
+}
+
+.auth-alert-info {
+  background-color: rgba(0, 86, 120, 0.35);
+  border: 1px solid var(--c-cyan);
+  color: var(--c-ice);
+}
+
+/* Campos de Senha com Botão Mostrar/Ocultar */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 42px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color var(--transition-fast);
+}
+
+.password-toggle-btn:hover {
+  color: var(--c-cyan);
+}
+
+/* Links e Navegação entre telas de autenticação */
+.auth-footer-nav {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.auth-link {
+  color: var(--c-cyan);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  transition: all var(--transition-fast);
+}
+
+.auth-link:hover {
+  color: var(--c-ice);
+  text-shadow: var(--glow-text-cyan);
+  text-decoration: underline;
+}
+
+/* Indicador de Carregamento nos Botões */
+.btn.loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: btnSpin 0.7s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes btnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Perfil do Usuário na Sidebar */
+.user-profile-widget {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: rgba(5, 217, 232, 0.05);
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.user-profile-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-cyan), var(--c-ocean));
+  color: var(--c-night);
+  font-weight: 700;
+  font-size: 0.88rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px var(--c-cyan);
+}
+
+.user-email-text {
+  font-size: 0.82rem;
+  color: var(--c-ice);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.user-badge-verified {
+  font-size: 0.7rem;
+  color: var(--c-cyan);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+  border-color: var(--c-pink);
+  color: var(--c-pink);
+  background-color: var(--priority-alta-bg);
+  box-shadow: var(--glow-pink);
+}
+
+/* Tela de Verificação Pendente */
+.verification-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+.verification-icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: rgba(5, 217, 232, 0.1);
+  border: 1px solid var(--c-cyan);
+  color: var(--c-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--glow-cyan);
+}
+
+.verification-email-highlight {
+  color: var(--c-cyan);
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.resend-countdown {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}

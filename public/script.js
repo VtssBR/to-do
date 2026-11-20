@@ -22,6 +22,8 @@ import {
   deleteTask,
   batchUpdateTaskOrders
 } from './src/services/task.service.js';
+import { authStore, AUTH_STATUS } from './src/services/auth.state.js';
+import { authUI } from './src/ui/auth.ui.js';
 
 // ==========================================================================
 // CONSTANTES E CHAVES DE ARMAZENAMENTO (APENAS PREFERÊNCIAS DE UI)
@@ -193,6 +195,14 @@ export const AppState = {
     if (this.unsubscribeFirestore) {
       this.unsubscribeFirestore();
       this.unsubscribeFirestore = null;
+    }
+
+    const authState = authStore.getState();
+    if (!authState.isAuthenticated) {
+      this.tasks = [];
+      this.loading = false;
+      this.render();
+      return;
     }
 
     this.loading = true;
@@ -1160,6 +1170,25 @@ function setupUIEvents() {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   updateHeaderCurrentDate();
+  
+  // Conecta AuthUI com o sistema de toast existente
+  authUI.setToastHandler((msg, type) => showToast(msg, type));
+  authUI.init();
+
+  // Reage a mudanças de autenticação para iniciar ou parar o listener do Firestore
+  authStore.subscribe((state) => {
+    if (state.isAuthenticated) {
+      AppState.startFirestoreListener();
+    } else {
+      if (AppState.unsubscribeFirestore) {
+        AppState.unsubscribeFirestore();
+        AppState.unsubscribeFirestore = null;
+      }
+      AppState.tasks = [];
+      AppState.render();
+    }
+  });
+
   AppState.init();
   TaskModal.init();
   DeleteModal.init();
